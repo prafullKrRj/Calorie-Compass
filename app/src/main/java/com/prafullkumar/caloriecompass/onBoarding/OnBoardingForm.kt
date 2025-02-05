@@ -10,27 +10,36 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.prafullkumar.caloriecompass.MainRoutes
+import com.prafullkumar.caloriecompass.OnBoardingRoutes
 import com.prafullkumar.caloriecompass.R
 
 @Composable
@@ -69,9 +78,10 @@ fun OnBoardingFormScreen(viewModel: OnBoardingViewModel, navController: NavContr
             NameTextField(viewModel)
             AgeSection(viewModel)
             WeightSection(viewModel)
+            HeightSection(viewModel)
             GoalSelection(viewModel)
         }
-        NextButton(navController)
+        NextButton(navController, viewModel)
     }
 
 }
@@ -90,12 +100,13 @@ fun AgeSection(viewModel: OnBoardingViewModel) {
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(.5f)
         )
-        FormField(
+        FormField(keyBoardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.weight(.5f),
             value = viewModel.uiState.age,
-            label = "25",
-            suffix = "years"
-        ) {
+            label = "age..",
+            trailing = {
+                Text("years")
+            }) {
             viewModel.uiState = viewModel.uiState.copy(age = it)
         }
     }
@@ -103,6 +114,7 @@ fun AgeSection(viewModel: OnBoardingViewModel) {
 
 @Composable
 fun WeightSection(viewModel: OnBoardingViewModel) {
+    var showWeighingUnitDropdownMenu by remember { mutableStateOf(false) }
     Row(
         Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -116,13 +128,56 @@ fun WeightSection(viewModel: OnBoardingViewModel) {
 
             modifier = Modifier.weight(.5f)
         )
-        FormField(
+        FormField(keyBoardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.weight(.5f),
             value = viewModel.uiState.weight,
-            label = "99",
-            suffix = "kg"
-        ) {
+            label = "weight..",
+            trailing = {
+                TextButton(onClick = {
+                    showWeighingUnitDropdownMenu = !showWeighingUnitDropdownMenu
+                }) {
+                    Text(viewModel.uiState.weighingUnit.value)
+                }
+                DropdownMenu(expanded = showWeighingUnitDropdownMenu, onDismissRequest = {
+                    showWeighingUnitDropdownMenu = false
+                }) {
+                    WeighingUnit.entries.forEach {
+                        DropdownMenuItem(text = {
+                            Text(it.value)
+                        }, onClick = {
+                            showWeighingUnitDropdownMenu = false
+                            viewModel.uiState = viewModel.uiState.copy(weighingUnit = it)
+                        })
+                    }
+                }
+            }) {
             viewModel.uiState = viewModel.uiState.copy(weight = it)
+        }
+    }
+}
+
+@Composable
+fun HeightSection(viewModel: OnBoardingViewModel) {
+    Row(
+        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            "What's your height?",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(.5f)
+        )
+        FormField(keyBoardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.weight(.5f),
+            value = viewModel.uiState.height,
+            label = "height..",
+            trailing = {
+                Text("cm")
+            }) {
+            viewModel.uiState = viewModel.uiState.copy(height = it)
         }
     }
 }
@@ -130,7 +185,10 @@ fun WeightSection(viewModel: OnBoardingViewModel) {
 @Composable
 fun NameTextField(viewModel: OnBoardingViewModel) {
     FormField(
-        Modifier.fillMaxWidth(), value = viewModel.uiState.name, label = "What's your name?"
+        Modifier.fillMaxWidth(),
+        value = viewModel.uiState.name,
+        label = "What's your name?",
+        keyBoardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
     ) {
         viewModel.uiState = viewModel.uiState.copy(
             name = it
@@ -143,10 +201,12 @@ fun FormField(
     modifier: Modifier,
     value: String,
     label: String,
-    suffix: String = "",
+    keyBoardOptions: KeyboardOptions = KeyboardOptions.Default,
+    trailing: @Composable () -> Unit = {},
     onValueChange: (String) -> Unit
 ) {
-    OutlinedTextField(value = value,
+    OutlinedTextField(keyboardOptions = keyBoardOptions,
+        value = value,
         onValueChange = onValueChange,
         modifier = modifier,
         shape = RoundedCornerShape(35),
@@ -161,7 +221,7 @@ fun FormField(
             Text(label, fontSize = 18.sp, fontWeight = FontWeight.W400)
         },
         trailingIcon = {
-            Text(suffix, fontSize = 18.sp, fontWeight = FontWeight.W400)
+            trailing()
         })
 }
 
@@ -202,10 +262,20 @@ fun GoalItem(
 }
 
 @Composable
-fun NextButton(navController: NavController) {
+fun NextButton(navController: NavController, viewModel: OnBoardingViewModel) {
+    var showError by remember { mutableStateOf(false) }
+    if (showError) {
+        Text("* Fill all the fields", color = MaterialTheme.colorScheme.error)
+    }
     Button(
         modifier = Modifier.padding(vertical = 16.dp), onClick = {
-            navController.navigate(MainRoutes.Home)
+            if (viewModel.canMoveToActivitySelectionScreen()) {
+                showError = false;
+                viewModel.onNextClicked()
+                navController.navigate(OnBoardingRoutes.OnBoardingActivityLevel)
+            } else {
+                showError = true;
+            }
         }, colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.onSurface,
             contentColor = MaterialTheme.colorScheme.surfaceBright

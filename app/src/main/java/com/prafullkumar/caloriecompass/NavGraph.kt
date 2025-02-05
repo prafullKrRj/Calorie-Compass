@@ -13,6 +13,12 @@ sealed interface MainRoutes {
 sealed interface HomeRoutes {
     @Serializable
     data object HomeScreen : HomeRoutes
+
+    @Serializable
+    data object LoggingScreen : HomeRoutes
+
+    @Serializable
+    data object SettingsScreen : HomeRoutes
 }
 
 sealed interface OnBoardingRoutes {
@@ -21,4 +27,7 @@ sealed interface OnBoardingRoutes {
 
     @Serializable
     data object OnBoardingForm : OnBoardingRoutes
+
+    @Serializable
+    data object OnBoardingActivityLevel : OnBoardingRoutes
 }
