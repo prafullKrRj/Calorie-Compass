@@ -57,7 +57,7 @@ fun OnBoardingFormScreen(viewModel: OnBoardingViewModel, navController: NavContr
                 .weight(.8f)
                 .verticalScroll(scrollState)
                 .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top)
         ) {
             Image(

@@ -8,7 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.prafullkumar.caloriecompass.R
-import com.prafullkumar.caloriecompass.app.home.data.HomeRepositoryImpl
+import com.prafullkumar.caloriecompass.app.home.domain.repository.HomeRepository
 import com.prafullkumar.caloriecompass.app.onBoarding.ui.ActivityLevel
 import com.prafullkumar.caloriecompass.app.onBoarding.ui.Goal
 import kotlinx.coroutines.launch
@@ -82,7 +82,7 @@ data class HomeState(
  * @property repository The repository to fetch data from.
  */
 class HomeViewModel(
-    private val repository: HomeRepositoryImpl
+    private val repository: HomeRepository
 ) : ViewModel() {
 
     var state by mutableStateOf(HomeState())

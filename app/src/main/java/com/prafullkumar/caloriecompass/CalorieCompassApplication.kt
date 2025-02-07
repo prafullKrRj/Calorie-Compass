@@ -3,6 +3,7 @@ package com.prafullkumar.caloriecompass
 import android.app.Application
 import androidx.room.Room
 import com.prafullkumar.caloriecompass.app.home.di.homeModule
+import com.prafullkumar.caloriecompass.app.log.logModule
 import com.prafullkumar.caloriecompass.app.onBoarding.di.onBoardingModule
 import com.prafullkumar.caloriecompass.app.settings.di.settingsModule
 import com.prafullkumar.caloriecompass.common.data.SharedPrefManager
@@ -38,7 +39,7 @@ class CalorieCompassApplication : Application() {
         startKoin {
             androidContext(this@CalorieCompassApplication)
             androidLogger()
-            modules(appModule, onBoardingModule, homeModule, settingsModule)
+            modules(appModule, onBoardingModule, homeModule, logModule, settingsModule)
         }
     }
 }

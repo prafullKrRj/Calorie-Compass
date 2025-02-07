@@ -6,16 +6,18 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
@@ -25,6 +27,8 @@ import androidx.navigation.compose.rememberNavController
 import com.prafullkumar.caloriecompass.app.home.ui.calorieIntake.CalorieIntakeScreen
 import com.prafullkumar.caloriecompass.app.home.ui.macroNutrient.MacroNutrientScreen
 import com.prafullkumar.caloriecompass.app.home.ui.main.HomeScreen
+import com.prafullkumar.caloriecompass.app.log.ui.FitnessLoggingScreen
+import com.prafullkumar.caloriecompass.app.log.ui.HistoryScreen
 import com.prafullkumar.caloriecompass.app.onBoarding.ui.ActivityLevelScreen
 import com.prafullkumar.caloriecompass.app.onBoarding.ui.OnBoardingFormScreen
 import com.prafullkumar.caloriecompass.app.onBoarding.ui.OnBoardingScreen
@@ -74,12 +78,14 @@ fun NavGraph(onBoarded: Boolean) {
  * @param navController NavController for navigation.
  * @param destination Current destination.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     navController: NavController,
     destination: Any
 ) {
     Scaffold(
+        Modifier.fillMaxSize(),
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
@@ -87,6 +93,16 @@ fun MainScreen(
                     onClick = { navController.navigate(HomeRoutes.HomeScreen) },
                     icon = {
                         Icon(Icons.Default.Home, contentDescription = "Home")
+                    },
+                )
+                NavigationBarItem(
+                    selected = HomeRoutes.LoggingScreen == destination,
+                    onClick = { navController.navigate(HomeRoutes.LoggingScreen) },
+                    icon = {
+                        Icon(
+                            ImageVector.vectorResource(R.drawable.baseline_fitness_center_24),
+                            contentDescription = "Logging"
+                        )
                     },
                 )
                 NavigationBarItem(
@@ -102,11 +118,15 @@ fun MainScreen(
         Box(
             Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
         ) {
             when (destination) {
-                is HomeRoutes.HomeScreen -> HomeScreen(getViewModel(), navController)
+                is HomeRoutes.HomeScreen -> HomeScreen(getViewModel(), navController, innerPadding)
                 is HomeRoutes.SettingsScreen -> SettingsScreen(getViewModel(), navController)
+                is HomeRoutes.LoggingScreen -> FitnessLoggingScreen(
+                    getViewModel(),
+                    innerPadding,
+                    navController
+                )
             }
         }
     }
@@ -137,9 +157,12 @@ fun NavGraphBuilder.onBoardingScreens(navController: NavController) {
  * @param navController NavController for navigation.
  */
 fun NavGraphBuilder.homeScreens(navController: NavController) {
-    navigation<MainRoutes.Home>(startDestination = HomeRoutes.HomeScreen) {
+    navigation<MainRoutes.Home>(startDestination = HomeRoutes.LoggingScreen) {
         composable<HomeRoutes.HomeScreen> {
             MainScreen(navController, HomeRoutes.HomeScreen)
+        }
+        composable<HomeRoutes.LoggingScreen> {
+            MainScreen(navController, HomeRoutes.LoggingScreen)
         }
         composable<HomeRoutes.MacroNutrientScreen> {
             MacroNutrientScreen(getViewModel(), navController)
@@ -149,6 +172,9 @@ fun NavGraphBuilder.homeScreens(navController: NavController) {
         }
         composable<HomeRoutes.SettingsScreen> {
             MainScreen(navController, HomeRoutes.SettingsScreen)
+        }
+        composable<HomeRoutes.LoggingHistoryScreen> {
+            HistoryScreen(getViewModel(), navController)
         }
     }
 }

@@ -19,9 +19,12 @@ sealed interface HomeRoutes {
 
     @Serializable
     data object CalorieIntakeScreen : HomeRoutes
-//
-//    @Serializable // unplanned feature
-//    data object LoggingScreen : HomeRoutes
+
+    @Serializable // unplanned feature
+    data object LoggingScreen : HomeRoutes
+
+    @Serializable
+    data object LoggingHistoryScreen : HomeRoutes
 
     @Serializable
     data object SettingsScreen : HomeRoutes
