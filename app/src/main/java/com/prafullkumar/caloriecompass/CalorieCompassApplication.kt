@@ -2,15 +2,14 @@ package com.prafullkumar.caloriecompass
 
 import android.app.Application
 import androidx.room.Room
-import com.prafullkumar.caloriecompass.app.home.HomeViewModel
-import com.prafullkumar.caloriecompass.data.SharedPrefManager
-import com.prafullkumar.caloriecompass.data.UserRepository
-import com.prafullkumar.caloriecompass.data.local.CalorieCompassDatabase
-import com.prafullkumar.caloriecompass.data.local.UserDataEntityDao
-import com.prafullkumar.caloriecompass.onBoarding.OnBoardingViewModel
+import com.prafullkumar.caloriecompass.app.home.di.homeModule
+import com.prafullkumar.caloriecompass.app.onBoarding.di.onBoardingModule
+import com.prafullkumar.caloriecompass.app.settings.di.settingsModule
+import com.prafullkumar.caloriecompass.common.data.SharedPrefManager
+import com.prafullkumar.caloriecompass.common.data.local.CalorieCompassDatabase
+import com.prafullkumar.caloriecompass.common.data.local.UserDataEntityDao
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
@@ -29,9 +28,6 @@ val appModule = module {
     single<UserDataEntityDao> {
         get<CalorieCompassDatabase>().userDataEntityDao()
     }
-    single { UserRepository(userDataEntityDao = get(), sharedPrefManager = get()) }
-    viewModel { OnBoardingViewModel(get()) }
-    viewModel<HomeViewModel> { HomeViewModel() }
 }
 
 
@@ -42,7 +38,7 @@ class CalorieCompassApplication : Application() {
         startKoin {
             androidContext(this@CalorieCompassApplication)
             androidLogger()
-            modules(appModule)
+            modules(appModule, onBoardingModule, homeModule, settingsModule)
         }
     }
 }
