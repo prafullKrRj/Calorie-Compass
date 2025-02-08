@@ -3,6 +3,7 @@ package com.prafullkumar.caloriecompass.app.settings.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,23 +39,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.prafullkumar.caloriecompass.app.onBoarding.ui.ActivityLevel
 import com.prafullkumar.caloriecompass.app.onBoarding.ui.Gender
 import com.prafullkumar.caloriecompass.app.onBoarding.ui.Goal
 import com.prafullkumar.caloriecompass.app.onBoarding.ui.WeighingUnit
-import com.prafullkumar.caloriecompass.common.data.local.UserDataEntity
+import com.prafullkumar.caloriecompass.common.domain.UserData
 
 /**
  * Composable function to display the settings screen.
  *
  * @param viewModel The ViewModel that provides the data and handles the logic.
- * @param navController The NavController to handle navigation.
  */
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
-    navController: NavController
+    paddingValues: PaddingValues = PaddingValues(0.dp)
 ) {
     // State variables to hold user input
     var userName by remember { mutableStateOf(viewModel.data?.userName ?: "") }
@@ -97,6 +96,7 @@ fun SettingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(paddingValues)
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -139,8 +139,7 @@ fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    OutlinedTextField(
-                        value = weight,
+                    OutlinedTextField(value = weight,
                         onValueChange = {
                             if (it.isEmpty() || it.toIntOrNull() != null) weight = it
                         },
@@ -154,8 +153,7 @@ fun SettingsScreen(
                             }) {
                                 Text(weightUnit)
                             }
-                            DropdownMenu(
-                                expanded = showWeighingUnitDropdownMenu,
+                            DropdownMenu(expanded = showWeighingUnitDropdownMenu,
                                 onDismissRequest = {
                                     showWeighingUnitDropdownMenu = false
                                 }) {
@@ -168,8 +166,7 @@ fun SettingsScreen(
                                     })
                                 }
                             }
-                        }
-                    )
+                        })
                 }
 
                 // Input field for height
@@ -201,8 +198,7 @@ fun SettingsScreen(
             shape = RoundedCornerShape(12.dp)
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
                     text = "Gender",
@@ -213,11 +209,9 @@ fun SettingsScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Gender.entries.forEach { genderOption ->
-                        FilterChip(
-                            selected = gender == genderOption.name,
+                        FilterChip(selected = gender == genderOption.name,
                             onClick = { gender = genderOption.name },
-                            label = { Text(genderOption.value) }
-                        )
+                            label = { Text(genderOption.value) })
                     }
                 }
             }
@@ -230,8 +224,7 @@ fun SettingsScreen(
             shape = RoundedCornerShape(12.dp)
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
                     text = "Fitness Goal",
@@ -241,12 +234,10 @@ fun SettingsScreen(
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(Goal.values()) { goalOption ->
-                        FilterChip(
-                            selected = goal == goalOption.name,
+                    items(Goal.entries.toTypedArray()) { goalOption ->
+                        FilterChip(selected = goal == goalOption.name,
                             onClick = { goal = goalOption.name },
-                            label = { Text(goalOption.value) }
-                        )
+                            label = { Text(goalOption.value) })
                     }
                 }
             }
@@ -259,8 +250,7 @@ fun SettingsScreen(
             shape = RoundedCornerShape(12.dp)
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
                     text = "Activity Level",
@@ -274,12 +264,9 @@ fun SettingsScreen(
                             .clickable {
                                 selectedActivityLevel = level
                                 activityLevel = level.name
-                            },
-                        colors = CardDefaults.elevatedCardColors(
-                            containerColor = if (activityLevel == level.name)
-                                MaterialTheme.colorScheme.primaryContainer
-                            else
-                                MaterialTheme.colorScheme.surface
+                            }, colors = CardDefaults.elevatedCardColors(
+                            containerColor = if (activityLevel == level.name) MaterialTheme.colorScheme.primaryContainer
+                            else MaterialTheme.colorScheme.surface
                         )
                     ) {
                         Row(
@@ -320,7 +307,7 @@ fun SettingsScreen(
         // Save Changes Button
         Button(
             onClick = {
-                val updatedData = UserDataEntity(
+                val updatedData = UserData(
                     id = viewModel.data?.id ?: 0,
                     userName = userName,
                     userWeight = weight.toIntOrNull() ?: 0,
@@ -339,8 +326,7 @@ fun SettingsScreen(
             shape = RoundedCornerShape(8.dp)
         ) {
             Text(
-                text = "Save Changes",
-                modifier = Modifier.padding(vertical = 4.dp)
+                text = "Save Changes", modifier = Modifier.padding(vertical = 4.dp)
             )
         }
     }

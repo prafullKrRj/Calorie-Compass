@@ -50,9 +50,11 @@ import com.prafullkumar.caloriecompass.R
 fun HomeScreen(
     viewModel: HomeViewModel, navController: NavController, innerPadding: PaddingValues
 ) {
-    Column(Modifier
-        .fillMaxSize()
-        .padding(innerPadding)) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+    ) {
         if (viewModel.state.loading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()

@@ -1,4 +1,4 @@
-package com.prafullkumar.caloriecompass.app.log.data
+package com.prafullkumar.caloriecompass.app.log.data.local
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -25,4 +25,10 @@ interface LoggingDao {
 
     @Query("SELECT SUM(caloriesBurned) FROM exercise_log WHERE date >= :startOfDay AND date < :endOfDay")
     fun getTotalCaloriesBurnedForDay(startOfDay: Long, endOfDay: Long): Flow<Double>
+
+    @Query("SELECT * FROM food_log ORDER BY date DESC LIMIT 5")
+    fun getLastFiveMeals(): Flow<List<FoodLogEntity>>
+
+    @Query("SELECT * FROM exercise_log ORDER BY date DESC LIMIT 5")
+    fun getLastFiveExercises(): Flow<List<ExerciseLogEntity>>
 }

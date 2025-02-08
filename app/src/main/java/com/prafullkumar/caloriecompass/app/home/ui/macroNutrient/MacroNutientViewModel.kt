@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.prafullkumar.caloriecompass.app.home.data.HomeRepositoryImpl
+import com.prafullkumar.caloriecompass.app.home.domain.repository.HomeRepository
 import kotlinx.coroutines.launch
 
 /**
@@ -69,7 +69,7 @@ data class MacroNutrientState(
  * @property repository The repository used to fetch TDEE data.
  */
 class MacroNutrientViewModel(
-    private val repository: HomeRepositoryImpl
+    private val repository: HomeRepository
 ) : ViewModel() {
 
     // State variable to hold the macronutrient data.

@@ -3,7 +3,7 @@ package com.prafullkumar.caloriecompass
 import android.app.Application
 import androidx.room.Room
 import com.prafullkumar.caloriecompass.app.home.di.homeModule
-import com.prafullkumar.caloriecompass.app.log.logModule
+import com.prafullkumar.caloriecompass.app.log.di.logModule
 import com.prafullkumar.caloriecompass.app.onBoarding.di.onBoardingModule
 import com.prafullkumar.caloriecompass.app.settings.di.settingsModule
 import com.prafullkumar.caloriecompass.common.data.SharedPrefManager

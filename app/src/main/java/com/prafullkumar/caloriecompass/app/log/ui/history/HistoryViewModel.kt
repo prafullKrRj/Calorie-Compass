@@ -1,8 +1,8 @@
-package com.prafullkumar.caloriecompass.app.log.ui
+package com.prafullkumar.caloriecompass.app.log.ui.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.prafullkumar.caloriecompass.app.log.data.FitnessRepository
+import com.prafullkumar.caloriecompass.app.log.domain.repository.FitnessRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 

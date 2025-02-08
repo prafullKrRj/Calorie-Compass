@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -28,7 +29,7 @@ import com.prafullkumar.caloriecompass.app.home.ui.calorieIntake.CalorieIntakeSc
 import com.prafullkumar.caloriecompass.app.home.ui.macroNutrient.MacroNutrientScreen
 import com.prafullkumar.caloriecompass.app.home.ui.main.HomeScreen
 import com.prafullkumar.caloriecompass.app.log.ui.FitnessLoggingScreen
-import com.prafullkumar.caloriecompass.app.log.ui.HistoryScreen
+import com.prafullkumar.caloriecompass.app.log.ui.history.HistoryScreen
 import com.prafullkumar.caloriecompass.app.onBoarding.ui.ActivityLevelScreen
 import com.prafullkumar.caloriecompass.app.onBoarding.ui.OnBoardingFormScreen
 import com.prafullkumar.caloriecompass.app.onBoarding.ui.OnBoardingScreen
@@ -94,6 +95,9 @@ fun MainScreen(
                     icon = {
                         Icon(Icons.Default.Home, contentDescription = "Home")
                     },
+                    label = {
+                        Text("Home")
+                    }
                 )
                 NavigationBarItem(
                     selected = HomeRoutes.LoggingScreen == destination,
@@ -104,6 +108,9 @@ fun MainScreen(
                             contentDescription = "Logging"
                         )
                     },
+                    label = {
+                        Text("Logs")
+                    }
                 )
                 NavigationBarItem(
                     selected = HomeRoutes.SettingsScreen == destination,
@@ -111,6 +118,9 @@ fun MainScreen(
                     icon = {
                         Icon(Icons.Default.Settings, contentDescription = "Settings")
                     },
+                    label = {
+                        Text("Settings")
+                    }
                 )
             }
         }
@@ -121,7 +131,7 @@ fun MainScreen(
         ) {
             when (destination) {
                 is HomeRoutes.HomeScreen -> HomeScreen(getViewModel(), navController, innerPadding)
-                is HomeRoutes.SettingsScreen -> SettingsScreen(getViewModel(), navController)
+                is HomeRoutes.SettingsScreen -> SettingsScreen(getViewModel(), innerPadding)
                 is HomeRoutes.LoggingScreen -> FitnessLoggingScreen(
                     getViewModel(),
                     innerPadding,
@@ -157,7 +167,7 @@ fun NavGraphBuilder.onBoardingScreens(navController: NavController) {
  * @param navController NavController for navigation.
  */
 fun NavGraphBuilder.homeScreens(navController: NavController) {
-    navigation<MainRoutes.Home>(startDestination = HomeRoutes.LoggingScreen) {
+    navigation<MainRoutes.Home>(startDestination = HomeRoutes.HomeScreen) {
         composable<HomeRoutes.HomeScreen> {
             MainScreen(navController, HomeRoutes.HomeScreen)
         }

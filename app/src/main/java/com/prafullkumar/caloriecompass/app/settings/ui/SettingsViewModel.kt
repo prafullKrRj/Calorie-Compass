@@ -8,7 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.prafullkumar.caloriecompass.app.settings.domain.SettingsRepository
-import com.prafullkumar.caloriecompass.common.data.local.UserDataEntity
+import com.prafullkumar.caloriecompass.common.domain.UserData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -25,7 +25,7 @@ class SettingsViewModel(
 ) : ViewModel() {
 
     // Mutable state to hold user data
-    var data by mutableStateOf<UserDataEntity?>(null)
+    var data by mutableStateOf<UserData?>(null)
 
     // Initialize the ViewModel by fetching user information
     init {
@@ -46,7 +46,7 @@ class SettingsViewModel(
      *
      * @param updatedData The updated user data to be saved.
      */
-    fun updateUserDetails(updatedData: UserDataEntity) {
+    fun updateUserDetails(updatedData: UserData) {
         viewModelScope.launch {
             settingsRepository.updateUserDetails(updatedData)
             withContext(Dispatchers.Main) {

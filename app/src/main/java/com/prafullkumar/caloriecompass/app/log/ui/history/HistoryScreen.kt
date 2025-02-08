@@ -1,4 +1,4 @@
-package com.prafullkumar.caloriecompass.app.log.ui
+package com.prafullkumar.caloriecompass.app.log.ui.history
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,6 +26,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.prafullkumar.caloriecompass.app.log.ui.components.ExerciseLogCard
+import com.prafullkumar.caloriecompass.app.log.ui.components.FoodLogCard
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

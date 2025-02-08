@@ -1,4 +1,4 @@
-package com.prafullkumar.caloriecompass.app.log.data
+package com.prafullkumar.caloriecompass.app.log.data.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

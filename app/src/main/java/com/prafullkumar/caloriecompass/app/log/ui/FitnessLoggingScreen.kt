@@ -1,23 +1,34 @@
 package com.prafullkumar.caloriecompass.app.log.ui
 
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,15 +59,21 @@ import com.prafullkumar.caloriecompass.HomeRoutes
 import com.prafullkumar.caloriecompass.R
 import com.prafullkumar.caloriecompass.app.log.ExerciseType
 import com.prafullkumar.caloriecompass.app.log.MealType
-import com.prafullkumar.caloriecompass.app.log.data.ExerciseLogEntity
-import com.prafullkumar.caloriecompass.app.log.data.FoodLogEntity
-import java.text.SimpleDateFormat
-import java.util.Date
+import com.prafullkumar.caloriecompass.app.log.domain.model.ExerciseLog
+import com.prafullkumar.caloriecompass.app.log.domain.model.FoodLog
+import com.prafullkumar.caloriecompass.app.log.ui.components.ExerciseLogCard
+import com.prafullkumar.caloriecompass.app.log.ui.components.FoodLogCard
 import java.util.Locale
 import kotlin.math.roundToInt
 
-
-// Composable UI
+/**
+ * Composable function for the Fitness Logging Screen.
+ * Displays the UI for logging food and exercise, and shows the daily summary.
+ *
+ * @param viewModel The ViewModel for managing fitness logging data.
+ * @param innerPadding Padding values for the inner content.
+ * @param navController Navigation controller for navigating between screens.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FitnessLoggingScreen(
@@ -92,11 +109,14 @@ fun FitnessLoggingScreen(
     ) { padding ->
         Column(
             modifier = Modifier
-                .padding(padding)
+                .padding(top = padding.calculateTopPadding())
+                .padding(bottom = innerPadding.calculateBottomPadding())
                 .fillMaxSize()
         ) {
             Row(
-                Modifier.fillMaxWidth(),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 OutlinedButton(onClick = {
@@ -111,57 +131,45 @@ fun FitnessLoggingScreen(
                 }
             }
 
-            // Daily Summary Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                elevation = CardDefaults.cardElevation(4.dp)
+
+            LazyColumn(
+                Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        "Today's Summary",
-                        style = MaterialTheme.typography.headlineSmall,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                item {
+                    DailySummaryCard(
+                        dailyCaloriesConsumed = dailyCaloriesConsumed,
+                        dailyCaloriesBurned = dailyCaloriesBurned
                     )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Calories Consumed: ${dailyCaloriesConsumed.roundToInt()}")
-                        Text("Calories Burned: ${dailyCaloriesBurned.roundToInt()}")
+                }
+                if (foodLogs.isNotEmpty()) {
+                    item {
+                        Text(
+                            "Recent Food Logs",
+                            style = MaterialTheme.typography.headlineSmall,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    }
+                    items(foodLogs) { foodLog ->
+                        FoodLogCard(
+                            foodLog = foodLog
+                        )
                     }
                 }
-            }
-
-            // Food Logs Section
-            Text(
-                "Recent Food Logs",
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-            )
-            LazyColumn {
-                items(foodLogs) { foodLog ->
-                    FoodLogCard(
-                        food = foodLog
-                    )
-                }
-            }
-
-            // Exercise Logs Section
-            Text(
-                "Recent Exercise Logs",
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-            )
-            LazyColumn {
-                items(exerciseLogs) { exerciseLog ->
-                    ExerciseLogCard(
-                        exercise = exerciseLog
-                    )
+                if (exerciseLogs.isNotEmpty()) {
+                    item {
+                        Text(
+                            "Recent Exercise Logs",
+                            style = MaterialTheme.typography.headlineSmall,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    }
+                    items(exerciseLogs) { exerciseLog ->
+                        ExerciseLogCard(
+                            exerciseLog = exerciseLog
+                        )
+                    }
                 }
             }
         }
@@ -190,95 +198,170 @@ fun FitnessLoggingScreen(
     }
 }
 
+
 @Composable
-fun ExerciseLogCard(
-    exercise: ExerciseLogEntity
+fun DailySummaryCard(
+    dailyCaloriesConsumed: Double,
+    dailyCaloriesBurned: Double,
+    modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = Modifier
+    // Animation for the numbers
+    val animatedCaloriesConsumed by animateFloatAsState(
+        targetValue = dailyCaloriesConsumed.toFloat(),
+        animationSpec = tween(1000)
+    )
+    val animatedCaloriesBurned by animateFloatAsState(
+        targetValue = dailyCaloriesBurned.toFloat(),
+        animationSpec = tween(1000)
+    )
+
+    // Subtle pulse animation for icons
+    val infiniteTransition = rememberInfiniteTransition(label = "iconPulse")
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "iconScale"
+    )
+
+    ElevatedCard(
+        modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFE6F2FF)
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Exercise Icon
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.baseline_fitness_center_24),
-                contentDescription = "Exercise",
-                modifier = Modifier
-                    .size(48.dp)
-                    .padding(end = 16.dp),
-                tint = Color(0xFF1A73E8)
+            Text(
+                "Today's Summary",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                fontWeight = FontWeight.Bold
             )
 
-            Column {
-                // Exercise Type and Date
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                // Calories Consumed Column
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.baseline_restaurant_24),
+                        contentDescription = "Calories Consumed",
+                        modifier = Modifier
+                            .size(32.dp)
+                            .scale(scale),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = exercise.exerciseType.name,
-                        style = MaterialTheme.typography.titleMedium,
+                        text = animatedCaloriesConsumed.roundToInt().toString(),
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(
-                            Date(
-                                exercise.date
-                            )
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        text = "Consumed",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                     )
                 }
 
-                // Duration and Calories
-                Row(
+                // Vertical Divider
+                Divider(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .height(80.dp)
+                        .width(1.dp)
+                        .padding(horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)
+                )
+
+                // Calories Burned Column
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.baseline_local_fire_department_24),
+                        contentDescription = "Calories Burned",
+                        modifier = Modifier
+                            .size(32.dp)
+                            .scale(scale),
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Duration: ${exercise.duration} mins",
-                        style = MaterialTheme.typography.bodyMedium
+                        text = animatedCaloriesBurned.roundToInt().toString(),
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Calories Burned: ${exercise.caloriesBurned.toInt()} kcal",
+                        text = "Burned",
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                     )
                 }
             }
+
+            // Net Calories Section
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Net Calories",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+            )
+            Text(
+                text = (dailyCaloriesConsumed - dailyCaloriesBurned).roundToInt().toString(),
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
 
-// Food Logging Dialog
+/**
+ * Composable function for the Food Logging Dialog.
+ * Displays a dialog for logging food details.
+ *
+ * @param onDismiss Callback when the dialog is dismissed.
+ * @param onSave Callback when the food log is saved.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FoodLoggingDialog(
     onDismiss: () -> Unit,
-    onSave: (FoodLogEntity) -> Unit
+    onSave: (FoodLog) -> Unit
 ) {
+    var mealSelectionExpanded by remember { mutableStateOf(false) }
     var foodName by remember { mutableStateOf("") }
     var calories by remember { mutableStateOf("") }
     var protein by remember { mutableStateOf("") }
     var carbs by remember { mutableStateOf("") }
     var fats by remember { mutableStateOf("") }
     var mealType by remember { mutableStateOf(MealType.BREAKFAST) }
-
+    var error by remember { mutableStateOf(false) }
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(16.dp),
@@ -298,25 +381,43 @@ fun FoodLoggingDialog(
 
                 // Meal Type Selector
                 ExposedDropdownMenuBox(
-                    expanded = false,
-                    onExpandedChange = {},
+                    expanded = mealSelectionExpanded,
+                    onExpandedChange = {
+                        mealSelectionExpanded = it
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
                 ) {
+                    OutlinedTextField(
+                        value = mealType.name.capitalize(Locale.ROOT),
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Meal Type") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(
+                                expanded = mealSelectionExpanded
+                            )
+                        },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth()
+                    )
                     ExposedDropdownMenu(
-                        expanded = false,
-                        onDismissRequest = {}
+                        expanded = mealSelectionExpanded,
+                        onDismissRequest = { mealSelectionExpanded = false }
                     ) {
                         MealType.entries.forEach { type ->
                             DropdownMenuItem(
-                                text = { Text(type.name.capitalize()) },
-                                onClick = { mealType = type }
+                                text = { Text(type.name.capitalize(Locale.ROOT)) },
+                                onClick = {
+                                    mealType = type
+                                    mealSelectionExpanded = false
+                                }
                             )
                         }
                     }
                 }
-
                 // Input Fields
                 OutlinedTextField(
                     value = foodName,
@@ -368,7 +469,14 @@ fun FoodLoggingDialog(
                         modifier = Modifier.weight(1f)
                     )
                 }
-
+                if (error) {
+                    Text(
+                        "Please fill all necessary fields!!",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
                 // Action Buttons
                 Row(
                     modifier = Modifier
@@ -381,7 +489,11 @@ fun FoodLoggingDialog(
                     }
                     Button(
                         onClick = {
-                            val foodLog = FoodLogEntity(
+                            if (foodName.isEmpty() || calories.isEmpty()) {
+                                error = true
+                                return@Button
+                            }
+                            val foodLog = FoodLog(
                                 mealType = mealType,
                                 foodName = foodName,
                                 calories = calories.toDoubleOrNull() ?: 0.0,
@@ -400,17 +512,23 @@ fun FoodLoggingDialog(
     }
 }
 
-// Exercise Logging Dialog
+/**
+ * Composable function for the Exercise Logging Dialog.
+ * Displays a dialog for logging exercise details.
+ *
+ * @param onDismiss Callback when the dialog is dismissed.
+ * @param onSave Callback when the exercise log is saved.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseLoggingDialog(
     onDismiss: () -> Unit,
-    onSave: (ExerciseLogEntity) -> Unit
+    onSave: (ExerciseLog) -> Unit
 ) {
     var exerciseType by remember { mutableStateOf(ExerciseType.GYM_WEIGHT_TRAINING) }
     var duration by remember { mutableStateOf("") }
     var caloriesBurned by remember { mutableStateOf("") }
-
+    var exerciseSelectionExpanded by remember { mutableStateOf(false) }
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(16.dp),
@@ -430,20 +548,39 @@ fun ExerciseLoggingDialog(
 
                 // Exercise Type Selector
                 ExposedDropdownMenuBox(
-                    expanded = false,
-                    onExpandedChange = {},
+                    expanded = exerciseSelectionExpanded,
+                    onExpandedChange = {
+                        exerciseSelectionExpanded = it
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
                 ) {
+                    OutlinedTextField(
+                        value = exerciseType.name.replace("_", " ").capitalize(),
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Exercise Type") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(
+                                expanded = exerciseSelectionExpanded
+                            )
+                        },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth()
+                    )
                     ExposedDropdownMenu(
-                        expanded = false,
-                        onDismissRequest = {}
+                        expanded = exerciseSelectionExpanded,
+                        onDismissRequest = { exerciseSelectionExpanded = false }
                     ) {
-                        ExerciseType.values().forEach { type ->
+                        ExerciseType.entries.forEach { type ->
                             DropdownMenuItem(
                                 text = { Text(type.name.replace("_", " ").capitalize()) },
-                                onClick = { exerciseType = type }
+                                onClick = {
+                                    exerciseType = type
+                                    exerciseSelectionExpanded = false
+                                }
                             )
                         }
                     }
@@ -480,7 +617,7 @@ fun ExerciseLoggingDialog(
                     }
                     Button(
                         onClick = {
-                            val exerciseLog = ExerciseLogEntity(
+                            val exerciseLog = ExerciseLog(
                                 exerciseType = exerciseType,
                                 duration = duration.toIntOrNull() ?: 0,
                                 caloriesBurned = caloriesBurned.toDoubleOrNull() ?: 0.0
@@ -493,92 +630,5 @@ fun ExerciseLoggingDialog(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun FoodLogCard(
-    food: FoodLogEntity
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF0F4F8)
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        ) {
-            // Food Name and Date
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = food.foodName,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = SimpleDateFormat(
-                        "MMM dd, yyyy",
-                        Locale.getDefault()
-                    ).format(Date(food.date)),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
-            }
-
-            // Meal Type
-            Text(
-                text = food.mealType.name,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.DarkGray,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-
-            // Calories
-            Text(
-                text = "Calories: ${food.calories.toInt()} kcal",
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(top = 12.dp)
-            )
-
-            // Nutritional Information
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                NutrientText(label = "Protein", value = food.protein)
-                NutrientText(label = "Carbs", value = food.carbs)
-                NutrientText(label = "Fats", value = food.fats)
-            }
-        }
-    }
-}
-
-@Composable
-private fun NutrientText(label: String, value: Double?) {
-    Column(horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = Color.Gray
-        )
-        Text(
-            text = value?.let { "${it.toInt()} g" } ?: "N/A",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium
-        )
     }
 }

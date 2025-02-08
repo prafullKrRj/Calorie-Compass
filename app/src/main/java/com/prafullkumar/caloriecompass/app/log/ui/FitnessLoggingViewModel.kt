@@ -2,9 +2,9 @@ package com.prafullkumar.caloriecompass.app.log.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.prafullkumar.caloriecompass.app.log.data.ExerciseLogEntity
-import com.prafullkumar.caloriecompass.app.log.data.FitnessRepository
-import com.prafullkumar.caloriecompass.app.log.data.FoodLogEntity
+import com.prafullkumar.caloriecompass.app.log.domain.model.ExerciseLog
+import com.prafullkumar.caloriecompass.app.log.domain.model.FoodLog
+import com.prafullkumar.caloriecompass.app.log.domain.repository.FitnessRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,11 +15,11 @@ import kotlinx.coroutines.launch
 class FitnessLoggingViewModel(
     private val repository: FitnessRepository
 ) : ViewModel() {
-    private val _foodLogs = MutableStateFlow<List<FoodLogEntity>>(emptyList())
-    val foodLogs: StateFlow<List<FoodLogEntity>> = _foodLogs.asStateFlow()
+    private val _foodLogs = MutableStateFlow<List<FoodLog>>(emptyList())
+    val foodLogs: StateFlow<List<FoodLog>> = _foodLogs.asStateFlow()
 
-    private val _exerciseLogs = MutableStateFlow<List<ExerciseLogEntity>>(emptyList())
-    val exerciseLogs: StateFlow<List<ExerciseLogEntity>> = _exerciseLogs.asStateFlow()
+    private val _exerciseLogs = MutableStateFlow<List<ExerciseLog>>(emptyList())
+    val exerciseLogs: StateFlow<List<ExerciseLog>> = _exerciseLogs.asStateFlow()
 
     private val _dailyCaloriesConsumed = MutableStateFlow(0.0)
     val dailyCaloriesConsumed: StateFlow<Double> = _dailyCaloriesConsumed.asStateFlow()
@@ -29,13 +29,13 @@ class FitnessLoggingViewModel(
 
     init {
         viewModelScope.launch {
-            repository.allFoodLogs.collect { logs ->
+            repository.lastFiveMeals.collect { logs ->
                 _foodLogs.value = logs
             }
         }
 
         viewModelScope.launch {
-            repository.allExerciseLogs.collect { logs ->
+            repository.lastFiveExercises.collect { logs ->
                 _exerciseLogs.value = logs
             }
         }
@@ -54,11 +54,11 @@ class FitnessLoggingViewModel(
         }
     }
 
-    fun addFoodLog(foodLog: FoodLogEntity) = viewModelScope.launch {
+    fun addFoodLog(foodLog: FoodLog) = viewModelScope.launch {
         repository.insertFoodLog(foodLog)
     }
 
-    fun addExerciseLog(exerciseLog: ExerciseLogEntity) = viewModelScope.launch {
+    fun addExerciseLog(exerciseLog: ExerciseLog) = viewModelScope.launch {
         repository.insertExerciseLog(exerciseLog)
     }
 }
