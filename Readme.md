@@ -25,7 +25,7 @@ Calorie Compass is an Android application designed to help users log their food 
 
 | Settings |
 |----------| 
-| ![Settings]([path/to/image5.png](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/Settings.png)) |
+| ![Settings](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/Settings.png) |
 
 ## Installation
 Download the application directly from here: [Calorie Compass](https://github.com/prafullKrRj/Calorie-Compass/raw/refs/heads/master/app/release/app-release.apk)
