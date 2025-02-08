@@ -21,11 +21,11 @@ Calorie Compass is an Android application designed to help users log their food 
 
 | Home Screen | Food Logging | Activity Tracking |
 |------------|-------------|----------------|
-| ![Home](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/Home.png) | ![Food Tracking](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/Logging.png) | ![History](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/FoodHistory.png)  ![Settings](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/Settings.png) |
+| ![Home](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/Home.png) | ![Food Tracking](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/Logging.png) | ![History](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/FoodHistory.png) |
 
 | Data Insights | Settings |
-|--------------|----------|
-| ![Data Insights](path/to/image4.png) | ![Settings](path/to/image5.png) |
+|--------------|----------| 
+![Settings]([path/to/image5.png](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/Settings.png)) |
 
 ## Installation
 Download the application directly from here: [Calorie Compass](https://github.com/prafullKrRj/Calorie-Compass/raw/refs/heads/master/app/release/app-release.apk)
