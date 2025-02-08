@@ -21,19 +21,17 @@ Calorie Compass is an Android application designed to help users log their food 
 
 | Home Screen | Food Logging | Activity Tracking |
 |------------|-------------|----------------|
-| ![Home](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/Home.png) | ![Food Tracking](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/Logging.png) | ![History](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/FoodHistory.png) |
+| ![Home](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/Home.png) | ![Food Logging](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/Logging.png) | ![Activity Tracking](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/FoodHistory.png) |
 
-| Settings |
-|----------| 
-| ![Settings](https://raw.githubusercontent.com/prafullKrRj/Calorie-Compass/refs/heads/master/ss/Settings.png) |
 
 ## Installation
-Download the application directly from here: [Calorie Compass](https://github.com/prafullKrRj/Calorie-Compass/raw/refs/heads/master/app/release/app-release.apk)
-OR 
+
+Download the application directly from here: [Calorie Compass](https://github.com/prafullKrRj/Calorie-Compass/raw/refs/heads/master/app/release/app-release.apk)  
+**OR**  
 1. Clone the repository:
    ```sh
    git clone https://github.com/prafullKrRj/Calorie-Compass.git
    ```
 2. Open the project in Android Studio.
 3. Sync Gradle and run the app on an emulator or physical device.
-   
+
